@@ -3,10 +3,10 @@ import reactLogo from './assets/react.svg'
 import './App.css'
 import PlusButton from './component/PlusButton'
 import ChattingWindow from './component/ChattingWindow'
-import Draggable from 'react-draggable'
 
 function App() {
-    const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0);
+    const [open, setOpen] = useState(false);
 
     // @ts-ignore
     return (
@@ -33,11 +33,11 @@ function App() {
             </p>
 
 
-            <ChattingWindow/>
-            <PlusButton/>
+            <ChattingWindow open={open} setOpen={setOpen}/>
+            <PlusButton onClick={() => setOpen(prev => !prev)}/>
 
         </div>
     )
 }
 
-export default App
+export default App;

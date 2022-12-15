@@ -1,23 +1,29 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Draggable, {DraggableData, DraggableEvent} from "react-draggable";
+import {io} from 'socket.io-client';
+import axios from "axios";
 import {
-    ChattingLayout,
-    ChattingHeader,
-    ChattingButtonBox,
-    ChattingOptionButton,
     ChattingBody,
+    ChattingButtonBox,
     ChattingFooter,
+    ChattingHeader,
     ChattingInput,
+    ChattingLayout,
+    ChattingOptionButton,
     ChattingSendButton
 } from "./style";
+import {ChattingMessageModel} from "../../model/ChattingMessage";
 
 type Position = {
     xRate: number;
     yRate: number;
 };
 
-const ChattingWindow = ({open: boolean = true}) => {
+const socket = io('http://localhost:3000/chat');
 
+const ChattingWindow = (props: any) => {
+
+    const {open, setOpen} = props;
     const [message, setMessage] = useState<string>("");
 
     const [currentPosition, setCurrentPosition] = useState<Position>({
@@ -25,10 +31,28 @@ const ChattingWindow = ({open: boolean = true}) => {
         yRate: -300
     });
 
+    useEffect(() => {
+        const messageHandler = (chat: any) => console.log(chat);
+
+        socket.on('message', messageHandler);
+
+        return () => {
+            socket.off('message', messageHandler);
+        };
+    }, []);
+
+
     const onDrag = (e: DraggableEvent, data: DraggableData) => {
         setCurrentPosition({xRate: data.lastX, yRate: data.lastY});
     };
 
+    const sendMessage = () => {
+        const payload = new ChattingMessageModel('test', message, new Date().getTime());
+        axios.post("http://127.0.0.1:3000", payload).catch(e => console.log(e));
+        setMessage("");
+    };
+
+    // @ts-ignore
     return (
         <Draggable
             position={{
@@ -38,10 +62,10 @@ const ChattingWindow = ({open: boolean = true}) => {
             onDrag={onDrag}
             scale={0.5}
         >
-            <ChattingLayout>
+            <ChattingLayout open={open}>
                 <ChattingHeader>
                     <ChattingButtonBox>
-                        <ChattingOptionButton color={"red"}/>
+                        <ChattingOptionButton color={"red"} onClick={() => setOpen(false)}/>
                         <ChattingOptionButton color={"orange"}/>
                         <ChattingOptionButton color={"green"}/>
                     </ChattingButtonBox>
@@ -49,7 +73,7 @@ const ChattingWindow = ({open: boolean = true}) => {
                 <ChattingBody/>
                 <ChattingFooter>
                     <ChattingInput value={message} onChange={(e) => setMessage(e.target.value)}/>
-                    <ChattingSendButton value={message}>전송</ChattingSendButton>
+                    <ChattingSendButton value={message} onClick={sendMessage}>전송</ChattingSendButton>
                 </ChattingFooter>
             </ChattingLayout>
         </Draggable>

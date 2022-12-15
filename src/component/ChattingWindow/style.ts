@@ -1,11 +1,16 @@
 import styled from "styled-components";
 
-export const ChattingLayout = styled.div`
-  position: relative;
+interface Layout {
+    open: boolean;
+}
+
+export const ChattingLayout = styled.div<Layout>`
+  position: absolute;
   width: 400px;
   height: 600px;
   border-radius: 20px;
   background-color: red;
+  display: ${props => props.open ? "block" : "none"};
 `
 
 export const ChattingHeader = styled.div`

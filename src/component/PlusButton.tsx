@@ -26,8 +26,12 @@ const ButtonStyle = styled.div`
   }
 `
 
-const PlusButton = () => {
-    return <ButtonStyle>+</ButtonStyle>;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+}
+
+const PlusButton: React.FC<ButtonProps> = (props: any) => {
+    const {onClick} = props;
+    return <ButtonStyle onClick={onClick}>+</ButtonStyle>;
 };
 
 export default PlusButton;
