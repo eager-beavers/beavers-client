@@ -25,6 +25,7 @@ const ChattingWindow = (props: any) => {
 
     const {open, setOpen} = props;
     const [message, setMessage] = useState<string>("");
+    const [messageList, setMessageList] = useState<Array<ChattingMessageModel>>([]);
 
     const [currentPosition, setCurrentPosition] = useState<Position>({
         xRate: 600,
@@ -32,7 +33,9 @@ const ChattingWindow = (props: any) => {
     });
 
     useEffect(() => {
-        const messageHandler = (chat: any) => console.log(chat);
+        const messageHandler = (chat: ChattingMessageModel) => {
+            setMessageList(prev => [...prev, chat]);
+        };
 
         socket.on('message', messageHandler);
 
@@ -52,7 +55,6 @@ const ChattingWindow = (props: any) => {
         setMessage("");
     };
 
-    // @ts-ignore
     return (
         <Draggable
             position={{
@@ -70,7 +72,9 @@ const ChattingWindow = (props: any) => {
                         <ChattingOptionButton color={"green"}/>
                     </ChattingButtonBox>
                 </ChattingHeader>
-                <ChattingBody/>
+                <ChattingBody>
+                    {messageList.map(data => <div key={data.createAt}>{data.message}</div>)}
+                </ChattingBody>
                 <ChattingFooter>
                     <ChattingInput value={message} onChange={(e) => setMessage(e.target.value)}/>
                     <ChattingSendButton value={message} onClick={sendMessage}>전송</ChattingSendButton>
