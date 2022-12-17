@@ -9,7 +9,7 @@ export const ChattingLayout = styled.div<Layout>`
   width: 400px;
   height: 600px;
   border-radius: 20px;
-  background-color: #ffffff;
+  background-color: #fef01b;
   display: ${props => props.open ? "flex" : "none"};
   align-items: center;
   justify-content: center;
@@ -89,31 +89,44 @@ export const ChattingOptionButton = styled.button`
   }
 `
 
+export const ChattingNickNameTitle = styled.div`
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: brown;
+  font-size: 35px;
+  font-weight: 900;
+`
+
 export const ChattingNickNameInput = styled.input`
   border: none;
-  border-radius: 15px;
+  border-radius: 20px;
   padding: 10px;
   outline: none;
   color: #000000;
-  background-color: #9bbbd4;
-
+  background-color: #ffffff;
+  margin: 5px;
 `
 
 export const ChattingNickNameButton = styled.button`
   width: 75px;
   height: 40px;
 
-  background-color: ${props => props.value === "" ? "lightgrey" : "#fef01b"};
-  color: ${props => props.value === "" ? "grey" : "black"};
+  background-color: ${props => props.value === "" ? "lightgrey" : "brown"};
+  color: ${props => props.value === "" ? "grey" : "#fef01b"};
 
   &:focus {
     outline: none;
   }
+
+  margin: 5px;
 `
 
 export const ChattingWrapper = styled.div`
   position: relative;
-  padding: 5px;
+  padding: 5px 10px;
   display: flex;
 `
 
@@ -121,13 +134,37 @@ const ChattingMessage = styled.div`
   color: #000000;
   padding: 5px;
   display: inline-block;
+  border-radius: 5px;
 `
 
 export const MyMessage = styled(ChattingMessage)`
   margin-left: auto;
   background-color: #fef01b;
+
+  &:before {
+    content: "";
+    position: absolute;
+    right: 2px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid #fef01b;
+    border-bottom: 10px solid transparent;
+    border-top-right-radius: 3px;
+
+  }
 `
 
 export const OtherMessage = styled(ChattingMessage)`
   background-color: #ffffff;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    width: 0;
+    height: 0;
+    border-right: 10px solid #ffffff;
+    border-bottom: 10px solid transparent;
+    border-top-left-radius: 3px;
+  }
 `

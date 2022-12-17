@@ -12,7 +12,7 @@ import {
     ChattingInput,
     ChattingLayout,
     ChattingNickNameButton,
-    ChattingNickNameInput,
+    ChattingNickNameInput, ChattingNickNameTitle,
     ChattingOptionButton,
     ChattingSendButton,
     ChattingWrapper,
@@ -89,12 +89,12 @@ const ChattingWindow = (props: any) => {
                             <ChattingBody>
                                 {messageList.map(data =>
                                     data.owner === userNickName
-                                        ? <ChattingWrapper>
-                                            <MyMessage key={data.createAt}>{data.message}</MyMessage>
+                                        ? <ChattingWrapper key={data.createAt}>
+                                            <MyMessage key={data.createAt + data.message}>{data.message}</MyMessage>
                                         </ChattingWrapper>
                                         :
-                                        <ChattingWrapper>
-                                            <OtherMessage key={data.createAt}>{data.message}</OtherMessage>
+                                        <ChattingWrapper key={data.createAt}>
+                                            <OtherMessage key={data.createAt + data.message}>{data.message}</OtherMessage>
                                         </ChattingWrapper>
                                 )}
                             </ChattingBody>
@@ -105,7 +105,11 @@ const ChattingWindow = (props: any) => {
                         </ChattingContent>
                         :
                         <ChattingContent>
-                            <ChattingNickNameInput value={userInput} onChange={(e) => setUserInput(e.target.value)}/>
+                            <ChattingNickNameTitle>
+                                Beavers Chat
+                            </ChattingNickNameTitle>
+                            <ChattingNickNameInput value={userInput} placeholder={"Name"}
+                                                   onChange={(e) => setUserInput(e.target.value)}/>
                             <ChattingNickNameButton
                                 value={userInput}
                                 onClick={() => setUserNickName(userInput)}>확인</ChattingNickNameButton>
