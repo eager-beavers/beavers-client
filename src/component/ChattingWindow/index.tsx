@@ -2,15 +2,22 @@ import {useEffect, useState} from "react";
 import Draggable, {DraggableData, DraggableEvent} from "react-draggable";
 import {io} from 'socket.io-client';
 import axios from "axios";
+import {isEmpty} from "lodash";
 import {
     ChattingBody,
     ChattingButtonBox,
+    ChattingContent,
     ChattingFooter,
     ChattingHeader,
     ChattingInput,
     ChattingLayout,
+    ChattingNickNameButton,
+    ChattingNickNameInput,
     ChattingOptionButton,
-    ChattingSendButton
+    ChattingSendButton,
+    ChattingWrapper,
+    MyMessage,
+    OtherMessage
 } from "./style";
 import {ChattingMessageModel} from "../../model/ChattingMessage";
 
@@ -24,6 +31,9 @@ const socket = io('http://localhost:3000/chat');
 const ChattingWindow = (props: any) => {
 
     const {open, setOpen} = props;
+
+    const [userNickName, setUserNickName] = useState<string>("");
+    const [userInput, setUserInput] = useState<string>("");
     const [message, setMessage] = useState<string>("");
     const [messageList, setMessageList] = useState<Array<ChattingMessageModel>>([]);
 
@@ -33,16 +43,16 @@ const ChattingWindow = (props: any) => {
     });
 
     useEffect(() => {
-        const messageHandler = (chat: ChattingMessageModel) => {
-            setMessageList(prev => [...prev, chat]);
-        };
-
-        socket.on('message', messageHandler);
-
-        return () => {
-            socket.off('message', messageHandler);
-        };
-    }, []);
+        if (!isEmpty(userNickName)) {
+            const messageHandler = (chat: ChattingMessageModel) => {
+                setMessageList(prev => [...prev, chat]);
+            };
+            socket.on('message', messageHandler);
+            return () => {
+                socket.off('message', messageHandler);
+            };
+        }
+    }, [userNickName]);
 
 
     const onDrag = (e: DraggableEvent, data: DraggableData) => {
@@ -50,7 +60,7 @@ const ChattingWindow = (props: any) => {
     };
 
     const sendMessage = () => {
-        const payload = new ChattingMessageModel('test', message, new Date().getTime());
+        const payload = new ChattingMessageModel(userNickName, message, new Date().getTime());
         axios.post("http://127.0.0.1:3000", payload).catch(e => console.log(e));
         setMessage("");
     };
@@ -65,20 +75,42 @@ const ChattingWindow = (props: any) => {
             scale={0.5}
         >
             <ChattingLayout open={open}>
-                <ChattingHeader>
-                    <ChattingButtonBox>
-                        <ChattingOptionButton color={"red"} onClick={() => setOpen(false)}/>
-                        <ChattingOptionButton color={"orange"}/>
-                        <ChattingOptionButton color={"green"}/>
-                    </ChattingButtonBox>
-                </ChattingHeader>
-                <ChattingBody>
-                    {messageList.map(data => <div key={data.createAt}>{data.message}</div>)}
-                </ChattingBody>
-                <ChattingFooter>
-                    <ChattingInput value={message} onChange={(e) => setMessage(e.target.value)}/>
-                    <ChattingSendButton value={message} onClick={sendMessage}>전송</ChattingSendButton>
-                </ChattingFooter>
+                {
+                    !isEmpty(userNickName)
+                        ?
+                        <ChattingContent>
+                            <ChattingHeader>
+                                <ChattingButtonBox>
+                                    <ChattingOptionButton color={"red"} onClick={() => setOpen(false)}/>
+                                    <ChattingOptionButton color={"orange"}/>
+                                    <ChattingOptionButton color={"green"}/>
+                                </ChattingButtonBox>
+                            </ChattingHeader>
+                            <ChattingBody>
+                                {messageList.map(data =>
+                                    data.owner === userNickName
+                                        ? <ChattingWrapper>
+                                            <MyMessage key={data.createAt}>{data.message}</MyMessage>
+                                        </ChattingWrapper>
+                                        :
+                                        <ChattingWrapper>
+                                            <OtherMessage key={data.createAt}>{data.message}</OtherMessage>
+                                        </ChattingWrapper>
+                                )}
+                            </ChattingBody>
+                            <ChattingFooter>
+                                <ChattingInput value={message} onChange={(e) => setMessage(e.target.value)}/>
+                                <ChattingSendButton value={message} onClick={sendMessage}>전송</ChattingSendButton>
+                            </ChattingFooter>
+                        </ChattingContent>
+                        :
+                        <ChattingContent>
+                            <ChattingNickNameInput value={userInput} onChange={(e) => setUserInput(e.target.value)}/>
+                            <ChattingNickNameButton
+                                value={userInput}
+                                onClick={() => setUserNickName(userInput)}>확인</ChattingNickNameButton>
+                        </ChattingContent>
+                }
             </ChattingLayout>
         </Draggable>
     )
