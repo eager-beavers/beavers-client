@@ -31,6 +31,8 @@ export const ChattingBody = styled.div`
   width: 100%;
   height: 400px;
   background-color: #9bbbd4;
+
+  overflow-y: scroll;
 `
 
 export const ChattingFooter = styled.div`
@@ -128,6 +130,19 @@ export const ChattingWrapper = styled.div`
   position: relative;
   padding: 5px 10px;
   display: flex;
+  flex-direction: column;
+`
+
+export const ChattingMyDetail = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+`
+
+export const ChattingOtherDetail = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: auto;
 `
 
 const ChattingMessage = styled.div`
@@ -135,6 +150,18 @@ const ChattingMessage = styled.div`
   padding: 5px;
   display: inline-block;
   border-radius: 5px;
+`
+
+const ChattingTime = styled.div`
+  line-height: 10px;
+  font-size: 10px;
+  color: lightgray;
+`
+
+const ChattingName = styled.div`
+  line-height: 10px;
+  font-size: 10px;
+  color: black;
 `
 
 export const MyMessage = styled(ChattingMessage)`
@@ -154,8 +181,16 @@ export const MyMessage = styled(ChattingMessage)`
   }
 `
 
+export const MyTime = styled(ChattingTime)`
+    margin-right: 7px;
+`
+
+export const MyName = styled(ChattingName)`
+`
+
 export const OtherMessage = styled(ChattingMessage)`
   background-color: #ffffff;
+  margin-right: auto;
 
   &:before {
     content: "";
@@ -167,4 +202,12 @@ export const OtherMessage = styled(ChattingMessage)`
     border-bottom: 10px solid transparent;
     border-top-left-radius: 3px;
   }
+`
+
+export const OtherTime = styled(ChattingTime)`
+  margin-left: 7px;
+`
+
+export const OtherName = styled(ChattingName)`
+
 `

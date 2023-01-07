@@ -16,8 +16,9 @@ import {
     ChattingOptionButton,
     ChattingSendButton,
     ChattingWrapper,
-    MyMessage,
-    OtherMessage
+    MyMessage, MyTime,
+    OtherTime,
+    OtherMessage, ChattingOtherDetail, OtherName, MyName, ChattingMyDetail
 } from "./style";
 import {ChattingMessageModel} from "../../model/ChattingMessage";
 
@@ -38,8 +39,8 @@ const ChattingWindow = (props: any) => {
     const [messageList, setMessageList] = useState<Array<ChattingMessageModel>>([]);
 
     const [currentPosition, setCurrentPosition] = useState<Position>({
-        xRate: 600,
-        yRate: -300
+        xRate: 500,
+        yRate: -500
     });
 
     useEffect(() => {
@@ -64,6 +65,10 @@ const ChattingWindow = (props: any) => {
         axios.post("http://127.0.0.1:3000", payload).catch(e => console.log(e));
         setMessage("");
     };
+
+    const timeFormat = (time: number) => {
+        return `${new Date(time).getHours() < 10 ? 0 : ''}${new Date(time).getHours()}:${new Date(time).getMinutes() < 10 ? 0 : ''}${new Date(time).getMinutes()}`
+    }
 
     return (
         <Draggable
@@ -90,16 +95,29 @@ const ChattingWindow = (props: any) => {
                                 {messageList.map(data =>
                                     data.owner === userNickName
                                         ? <ChattingWrapper key={data.createAt}>
+                                            <ChattingMyDetail>
+                                                <MyTime key={data.createAt + data.createAt}>{timeFormat(data.createAt)}</MyTime>
+                                                <MyName key={data.createAt +data.owner}>{data.owner}</MyName>
+                                            </ChattingMyDetail>
                                             <MyMessage key={data.createAt + data.message}>{data.message}</MyMessage>
                                         </ChattingWrapper>
                                         :
                                         <ChattingWrapper key={data.createAt}>
+                                            <ChattingOtherDetail>
+                                                <OtherName key={data.createAt +data.owner}>{data.owner}</OtherName>
+                                                <OtherTime key={data.createAt + data.createAt}>{timeFormat(data.createAt)}</OtherTime>
+                                            </ChattingOtherDetail>
                                             <OtherMessage key={data.createAt + data.message}>{data.message}</OtherMessage>
                                         </ChattingWrapper>
                                 )}
                             </ChattingBody>
                             <ChattingFooter>
-                                <ChattingInput value={message} onChange={(e) => setMessage(e.target.value)}/>
+                                {/* onKeyDown api call 두번 날아감, onKeyPress api call 한번 날아감 무슨 차이점? */}
+                                <ChattingInput
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                />
                                 <ChattingSendButton value={message} onClick={sendMessage}>전송</ChattingSendButton>
                             </ChattingFooter>
                         </ChattingContent>
